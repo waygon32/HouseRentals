@@ -1,5 +1,4 @@
 package com.example.case6.model;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

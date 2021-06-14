@@ -21,8 +21,8 @@ public class Review {
     private String comment;
     @NotNull
     private int rating;
-    @OneToOne
-    @JoinColumn(name = "booking_id")
-    private Booking booking;
+//    @OneToOne
+//    @JoinColumn(name = "booking_id")
+//    private Booking booking;
 
 }
