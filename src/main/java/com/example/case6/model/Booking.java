@@ -16,14 +16,15 @@ import java.util.Date;
 @NoArgsConstructor
 public class Booking {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private  Long bookingId;
     @FutureOrPresent
     private Date checkinDate;
     @FutureOrPresent
     private Date checkoutDate;
     private String total;
-    private int  bookingStatus;
+    @Column(columnDefinition = "varchar(50) default '-1' ",insertable = false)
+    private Integer  bookingStatus;
     @ManyToOne
     @JoinColumn(name = "house_id")
     private House house;
