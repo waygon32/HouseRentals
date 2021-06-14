@@ -7,6 +7,7 @@ import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
 
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -15,9 +16,12 @@ public class Images{
     @Id
     @GeneratedValue(strategy =  GenerationType.IDENTITY)
     private Long id ;
-    @ManyToOne
-    private House house;
+
     @Nullable
     private String linkImage;
+
+    @ManyToOne(cascade=CascadeType.MERGE)
+    private House house;
+
 
 }

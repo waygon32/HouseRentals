@@ -16,13 +16,15 @@ public class House {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long houseId;
+
     @NotNull
     private String houseName;
+
     @NotNull
     private String houseAddress;
     @NotNull
     private String area;
-    @NotNull
+    @Column(nullable = false)
     private String type;
     @NotNull
     private String bedroomQuantity;

@@ -1,12 +1,10 @@
 package com.example.case6.model;
 
-import com.sun.tracing.dtrace.ArgsAttributes;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import javax.validation.constraints.Future;
 import javax.validation.constraints.FutureOrPresent;
 import java.util.Date;
 
@@ -23,7 +21,7 @@ public class Booking {
     @FutureOrPresent
     private Date checkoutDate;
     private String total;
-    private Boolean  bookingStatus;
+    private int bookingStatus;
     @ManyToOne
     @JoinColumn(name = "house_id")
     private House house;
