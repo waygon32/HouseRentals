@@ -1,4 +1,4 @@
-package com.example.case6.service;
+package com.example.case6.service.booking;
 
 import com.example.case6.model.Booking;
 import com.example.case6.repository.IBookingRepository;
@@ -6,9 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
-public class BookingService implements IGeneralService<Booking> {
+public class BookingService implements IBookingService {
     @Autowired
     IBookingRepository bookingRepository;
 
@@ -16,12 +17,14 @@ public class BookingService implements IGeneralService<Booking> {
     public Iterable<Booking> findAll(int page, int size) {
         return null;
     }
+
+    @Override
+    public Optional<Booking> findById(Long id) {
+        return bookingRepository.findById(id);
+    }
+
     public Iterable<Booking> findAll() {
         return bookingRepository.findAll();
-    }
-    @Override
-    public void deleteById(Long id) {
-        bookingRepository.deleteById(id);
     }
 
     @Override
@@ -30,12 +33,12 @@ public class BookingService implements IGeneralService<Booking> {
     }
 
     @Override
-    public Booking findById(Long id) {
-        return bookingRepository.findById(id).get();
+    public void remove(Long id) {
+        bookingRepository.deleteById(id);
     }
 
     @Override
-    public List<Booking> getAllBookingByHouseId(Long id) {
+    public List<Booking> getBookingsByHouseHouseId(Long id) {
         return bookingRepository.getBookingsByHouseHouseId(id);
     }
 }

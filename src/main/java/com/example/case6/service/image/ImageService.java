@@ -18,6 +18,11 @@ public class ImageService implements IImageService {
     }
 
     @Override
+    public Iterable<Images> findAll(int page, int size) {
+        return null;
+    }
+
+    @Override
     public Optional<Images> findById(Long id) {
         return imageRepository.findById(id);
     }

@@ -17,6 +17,11 @@ public class HouseService implements IHouseService {
     }
 
     @Override
+    public Iterable<House> findAll(int page, int size) {
+        return null;
+    }
+
+    @Override
     public Optional<House> findById(Long id) {
         return houseRepository.findById(id);
     }
