@@ -14,6 +14,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import java.util.List;
+import java.util.Set;
 
 
 @Entity
@@ -48,9 +49,11 @@ public class Users {
     private String email;
 
     private String avatarUrl;
+
     @OneToMany
     @JsonIgnore
     private List<Booking> bookingList;
 
-
+    @ManyToMany(fetch = FetchType.EAGER)
+    private Set<Role> roles;
 }

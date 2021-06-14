@@ -21,7 +21,8 @@ public class Booking {
     @FutureOrPresent
     private Date checkoutDate;
     private String total;
-    private int bookingStatus;
+    @Column(columnDefinition = "varchar(50) default '-1' ",insertable = false)
+    private Integer  bookingStatus;
     @ManyToOne
     @JoinColumn(name = "house_id")
     private House house;
