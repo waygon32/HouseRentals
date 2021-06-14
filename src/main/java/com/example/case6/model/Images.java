@@ -17,10 +17,10 @@ public class Images{
     @Id
     @GeneratedValue(strategy =  GenerationType.IDENTITY)
     private Long id ;
+//    @ManyToOne(cascade=CascadeType.MERGE)
+//    private House houseId;
     @Nullable
     private String linkImage;
     @NotNull
     private Long houseId;
-//    @ManyToOne
-//    private House house;
 }

@@ -1,10 +1,13 @@
 package com.example.case6.model;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import javax.persistence.*;
+import javax.validation.constraints.FutureOrPresent;
+import java.util.Date;
 import javax.validation.constraints.NotNull;
-import java.sql.Date;
+
 
 
 
@@ -30,4 +33,5 @@ public class Booking {
     @ManyToOne
     @JoinColumn(name = "users_id")
     private Users users;
+
 }

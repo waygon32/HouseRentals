@@ -1,6 +1,8 @@
 package com.example.case6.model;
 
+import com.example.case6.model.Booking;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,8 +13,10 @@ import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+
 import java.util.List;
 import java.util.Set;
+
 
 @Entity
 @Data
