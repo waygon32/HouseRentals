@@ -22,7 +22,7 @@ import java.time.LocalDate;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-public class Booking implements Serializable {
+public class Booking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long bookingId;
