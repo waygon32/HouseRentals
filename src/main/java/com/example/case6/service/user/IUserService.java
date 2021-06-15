@@ -9,4 +9,6 @@ public interface IUserService extends IGeneralService<Users>, UserDetailsService
     boolean existsByEmail(String email);
     boolean existsByUsername(String username);
     boolean existByPhoneNumber(String phone);
+    void update(Users users);
+    Users findbyId(Long id);
 }

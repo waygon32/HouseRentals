@@ -1,7 +1,6 @@
 package com.example.case6.service.user;
 
 import com.example.case6.model.UserPrinciple;
-import com.example.case6.model.Users;
 import io.jsonwebtoken.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

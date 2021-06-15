@@ -1,9 +1,6 @@
 package com.example.case6.controller;
 
-import com.example.case6.model.JwtResponse;
-import com.example.case6.model.Role;
-import com.example.case6.model.RoleName;
-import com.example.case6.model.Users;
+import com.example.case6.model.*;
 import com.example.case6.service.role.RoleService;
 import com.example.case6.service.user.IUserService;
 import com.example.case6.service.user.JwtService;
@@ -16,12 +13,14 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 @RestController
@@ -42,6 +41,10 @@ public class AuthController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    private UserPrinciple getCurrentUser() {
+        return (UserPrinciple) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    }
+
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Users users){
         Authentication authentication = authenticationManager.authenticate(
@@ -56,7 +59,10 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public  ResponseEntity<Users> register( @RequestBody Users users){
+    public  ResponseEntity<Users> register(@Valid @RequestBody Users users, BindingResult bindingResult){
+        if(bindingResult.hasErrors()){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
         if (userService.existsByUsername(users.getUsername())){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -74,5 +80,16 @@ public class AuthController {
         users.setRoles(roles);
         return new ResponseEntity<>(userService.save(users), HttpStatus.CREATED);
     }
-//    @PostMapping("/editpassword")
+
+    @PostMapping("/edit-profile")
+    public ResponseEntity<Users> updateUser(@Valid @RequestBody Users users, BindingResult bindingResult) {
+        Users currentUser = userService.findbyId(getCurrentUser().getId());
+        currentUser.setFullname(users.getFullname());
+        currentUser.setUserAddress(users.getUserAddress());
+        currentUser.setPhone(users.getPhone());
+        currentUser.setEmail(users.getEmail());
+        currentUser.setAvatarUrl(users.getAvatarUrl());
+        userService.update(currentUser);
+        return new ResponseEntity<Users>(currentUser, HttpStatus.OK);
+    }
 }
