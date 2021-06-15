@@ -7,7 +7,7 @@ import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+
 
 @Data
 @Entity
@@ -21,8 +21,8 @@ public class Review {
     private String comment;
     @NotNull
     private int rating;
-    @OneToOne
-    @JoinColumn(name = "booking_id")
-    private Booking booking;
+//    @OneToOne
+//    @JoinColumn(name = "booking_id")
+//    private Booking booking;
 
 }

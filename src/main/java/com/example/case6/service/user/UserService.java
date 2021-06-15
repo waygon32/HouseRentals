@@ -13,6 +13,16 @@ public class UserService implements IUserService {
     @Autowired
     private IUserRepository userRepository;
 
+//    @Override
+//    public Optional<Users> fillbyId(Long id) {
+//        return userRepository.findById(id);
+//    }
+
+    @Override
+    public Iterable<Users> findAll() {
+        return null;
+    }
+
     @Override
     public Users findbyId(Long id) {
         return userRepository.findUsersByUserId(id);
@@ -21,6 +31,11 @@ public class UserService implements IUserService {
     @Override
     public Users save(Users users) {
         return userRepository.save(users);
+    }
+
+    @Override
+    public void remove(Long id) {
+
     }
 
     @Override

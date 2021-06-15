@@ -47,6 +47,7 @@ public class JwtService {
         return false;
     }
 
+    //lay user name
     public String getUserNameFromJwtToken(String token){
         String userName = Jwts.parser()
                 .setSigningKey(SECRET_KEY)
