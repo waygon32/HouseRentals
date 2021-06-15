@@ -42,8 +42,11 @@ public class House {
 //    @OneToMany
 //    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 //    private List<Images> imagesList;
-    @OneToMany(mappedBy = "houseId")
+    @OneToMany
+        @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
     private List<Images> imagesList;
+//    @OneToMany(mappedBy = "houseId")
+//    private List<Images> imagesList;
     @ManyToOne
     @JoinColumn(name = "users_id")
     private Users users;

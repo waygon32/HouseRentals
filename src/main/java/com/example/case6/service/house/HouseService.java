@@ -42,7 +42,7 @@ public class HouseService implements IHouseService {
     public Iterable<House> findAll() {
         Iterable<House> houses = houseRepository.findAll();
         houses.forEach(house -> {
-            Iterable<Images> images = imageRepository.getImagesByHouseId(house.getHouseId());
+            Iterable<Images> images = imageRepository.getImagesByHouseHouseId(house.getHouseId());
             //Đổi iterable -> list
             house.setImagesList(StreamSupport.stream(images.spliterator(), false).collect(Collectors.toList()));
         });

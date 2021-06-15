@@ -34,6 +34,6 @@ public class ImageService implements IImageService {
 
     @Override
     public Iterable<Images> getImagesByHouseId(Long houseId) {
-        return imageRepository.getImagesByHouseId(houseId);
+        return imageRepository.getImagesByHouseHouseId(houseId);
     }
 }

@@ -28,7 +28,7 @@ public class HouseController {
         return new ResponseEntity<>(houseService.save(house), HttpStatus.OK);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/detail/{id}")
     public ResponseEntity<House> getHouse(@PathVariable Long id) {
         Optional<House> productOptional = houseService.findById(id);
         return productOptional.map(house -> new ResponseEntity<>(house, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
