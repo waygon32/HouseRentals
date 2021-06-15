@@ -17,7 +17,8 @@ public class Images{
     @Id
     @GeneratedValue(strategy =  GenerationType.IDENTITY)
     private Long id ;
-    @ManyToOne(cascade=CascadeType.ALL)
+
+    @ManyToOne(cascade=CascadeType.MERGE)
     private House house;
     @Nullable
     private String linkImage;

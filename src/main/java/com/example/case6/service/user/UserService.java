@@ -14,14 +14,29 @@ public class UserService implements IUserService {
     @Autowired
     private IUserRepository userRepository;
 
+//    @Override
+//    public Optional<Users> fillbyId(Long id) {
+//        return userRepository.findById(id);
+//    }
+
     @Override
-    public Optional<Users> fillbyId(Long id) {
-        return userRepository.findById(id);
+    public Iterable<Users> findAll() {
+        return null;
+    }
+
+    @Override
+    public Optional<Users> findById(Long id) {
+        return Optional.empty();
     }
 
     @Override
     public Users save(Users users) {
         return userRepository.save(users);
+    }
+
+    @Override
+    public void remove(Long id) {
+
     }
 
     @Override

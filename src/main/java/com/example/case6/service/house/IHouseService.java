@@ -7,5 +7,7 @@ import java.util.Date;
 
 public interface IHouseService extends IGeneralService<House> {
     Iterable<House> findHouse(String search, Date checkin, Date checkout);
-    Iterable<House> findAll();
+
+//    Iterable<House> findAllHouse(int page, int size);
+
 }
