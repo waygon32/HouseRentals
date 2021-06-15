@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.util.List;
 import java.util.Set;
@@ -23,18 +24,23 @@ public class Users {
     private Long userId;
 
     @NotNull
+    @Size(max = 30)
+    @Pattern(regexp = "[A-Za-z ]+")
     private String fullname;
 
     @NotNull
-    @Size(min = 6)
+    @Size(min = 6, max=20)
+    @Pattern(regexp = "^(?=[a-zA-Z0-9._])(?!.*[_.]{2})[^_.].*[^_.]$")
     private String username;
 
     @NotNull
     @Size(min = 6)
+//    @Pattern(regexp = "[a-zA-Z0-9._]+")
     private String password;
 
     @NotNull
     @Size(min = 10, max = 10)
+    @Pattern(regexp = "((0)+([0-9]{9})\\b)")
     private String phone;
 
     @NotNull
