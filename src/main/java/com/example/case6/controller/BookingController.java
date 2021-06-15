@@ -1,16 +1,14 @@
 package com.example.case6.controller;
 
 import com.example.case6.model.Booking;
-import com.example.case6.service.BookingService;
+import com.example.case6.service.booking.BookingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.method.support.InvocableHandlerMethod;
 
 import javax.validation.Valid;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -47,7 +45,7 @@ public class BookingController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Boolean> delete(@PathVariable("id") Long id) {
-        bookingService.deleteById(id);
+        bookingService.remove(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -55,7 +53,7 @@ public class BookingController {
     //Lấy ra listBooking của 1 ngôi nhà
     //Để lọc ra những ngày đã có người đặt phòng
     public ResponseEntity<?> getListBookingByHouseId(@PathVariable("id") Long id) {
-        List<Booking> bookingList = bookingService.getAllBookingByHouseId(id);
+        List<Booking> bookingList = bookingService.getBookingsByHouseHouseId(id);
         return new ResponseEntity<>(bookingList, HttpStatus.OK);
     }
 
