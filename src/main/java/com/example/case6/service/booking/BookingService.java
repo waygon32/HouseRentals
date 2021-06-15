@@ -13,19 +13,11 @@ public class BookingService implements IBookingService {
     @Autowired
     IBookingRepository bookingRepository;
 
-    @Override
-    public Iterable<Booking> findAll(int page, int size) {
-        return null;
-    }
-
-    @Override
-    public Optional<Booking> findById(Long id) {
-        return bookingRepository.findById(id);
-    }
 
     public Iterable<Booking> findAll() {
         return bookingRepository.findAll();
     }
+
 
     @Override
     public Booking save(Booking booking) {
@@ -36,6 +28,13 @@ public class BookingService implements IBookingService {
     public void remove(Long id) {
         bookingRepository.deleteById(id);
     }
+
+    @Override
+    public Optional<Booking> findById(Long id) {
+        return bookingRepository.findById(id);
+    }
+
+
 
     @Override
     public List<Booking> getBookingsByHouseHouseId(Long id) {

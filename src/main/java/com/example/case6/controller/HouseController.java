@@ -1,12 +1,16 @@
 package com.example.case6.controller;
 
 import com.example.case6.model.House;
+
+import com.example.case6.model.Images;
 import com.example.case6.service.house.IHouseService;
+import com.example.case6.service.image.IImageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.awt.*;
 import java.util.Date;
 import java.util.Optional;
 
@@ -16,10 +20,17 @@ import java.util.Optional;
 public class HouseController {
     @Autowired
     private IHouseService houseService;
+    @Autowired
+    private IImageService imageService;
 
     @GetMapping
     public ResponseEntity<Iterable<House>> findAllHouse() {
         return new ResponseEntity<>(houseService.findAll(), HttpStatus.OK);
+    }
+    @GetMapping("/pagination")
+    public ResponseEntity<Iterable<House>> getAllHouseUsingPagination(@RequestParam int page, @RequestParam int size) {
+        Iterable<House> houses = houseService.findAllHouse(page, size);
+        return new ResponseEntity<>(houses, HttpStatus.OK);
     }
 
     @PostMapping
@@ -54,6 +65,13 @@ public class HouseController {
 
     @GetMapping("search")
     public ResponseEntity<Iterable<House>> searchHouse(@RequestParam String search, @RequestParam Date checkin, @RequestParam Date checkout) {
-        return new ResponseEntity<>(houseService.findHouse(search, checkin, checkout), HttpStatus.OK);
+        Iterable<House> houses = houseService.findHouse(search, checkin, checkout);
+        return new ResponseEntity<>(houses, HttpStatus.OK);
+    }
+    @GetMapping("/{id}/images")
+    public ResponseEntity<Iterable<Images>> getAllImageByProduct(@PathVariable Long id) {
+        Optional<House> houseOptional = houseService.findById(id);
+        return houseOptional.map(house -> new ResponseEntity<>(imageService.findAllByHouse(house), HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 }
