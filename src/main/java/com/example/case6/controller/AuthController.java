@@ -56,7 +56,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public  ResponseEntity<Users> register(@RequestBody Users users){
+    public  ResponseEntity<?> register(@RequestBody Users users){
         if (userService.existsByUsername(users.getUsername())){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }

@@ -32,7 +32,7 @@ public class BookingController {
 
     @GetMapping
     //lấy ra list booking của 1 người,tự động đổi trạng thái bookingStatus trước ngày nhận phòng  1 ngày
-    public ResponseEntity<?> getAllBookingByUserId() {
+    public ResponseEntity<?> getAllBookingByUserId(){
         LocalDate today = LocalDate.now();
         LocalDate currentDate = today.plusDays(1);
         List<Booking> list = (List<Booking>) bookingService.findAll();
@@ -59,6 +59,6 @@ public class BookingController {
         return new ResponseEntity<>(bookingList, HttpStatus.OK);
     }
 
-}
+} 
 
 
