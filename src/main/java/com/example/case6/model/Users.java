@@ -40,7 +40,6 @@ public class Users {
 
     @NotNull
     @Size(min = 6)
-//    @Pattern(regexp = "[a-zA-Z0-9._]+")
     private String password;
 
     @NotNull

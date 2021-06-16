@@ -23,9 +23,9 @@ public class BookingController {
 
     @PostMapping
     public ResponseEntity<?> createBooking(@Valid @RequestBody Booking booking, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
-        }
+//        if (bindingResult.hasErrors()) {
+//            return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+//        }
         bookingService.save(booking);
         return new ResponseEntity<>(HttpStatus.OK);
     }
