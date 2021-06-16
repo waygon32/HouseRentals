@@ -35,7 +35,7 @@ public class HouseService implements IHouseService {
 
     @Override
     public Iterable<House> findHouse(String search, Date checkin, Date checkout) {
-        return houseRepository.findHouse(search,checkin,checkout);
+        return houseRepository.findHouse(search, checkin, checkout);
     }
 
     @Override
@@ -54,4 +54,10 @@ public class HouseService implements IHouseService {
     public Optional<House> findById(Long id) {
         return houseRepository.findById(id);
     }
+
+    @Override
+    public Iterable<House> getListHouseOfUser(Long id) {
+        return houseRepository.findHousesByUsersUserId(id);
+    }
+
 }

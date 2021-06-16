@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.awt.*;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -37,13 +38,6 @@ public class HouseController {
     public ResponseEntity<House> createHouse(@RequestBody House house) {
         return new ResponseEntity<>(houseService.save(house), HttpStatus.OK);
     }
-
-    @GetMapping("/detail/{id}")
-    public ResponseEntity<House> getHouse(@PathVariable Long id) {
-        Optional<House> productOptional = houseService.findById(id);
-        return productOptional.map(house -> new ResponseEntity<>(house, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
-    }
-
     @PutMapping("/{id}")
     public ResponseEntity<House> updateProduct(@PathVariable Long id, @RequestBody House house) {
         Optional<House> productOptional = houseService.findById(id);
@@ -74,4 +68,13 @@ public class HouseController {
 //        return houseOptional.map(house -> new ResponseEntity<>(imageService.findAllByHouse(house), HttpStatus.OK))
 //                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
 //    }
+
+    @GetMapping("/myHouses/{userId}")
+    public ResponseEntity<Iterable<House>> getListHouseOfUserId(@PathVariable("userId") Long id) {
+        if(id==null){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        List<House> list = (List<House>) houseService.getListHouseOfUser(id);
+        return  new ResponseEntity<>(list,HttpStatus.OK);
+    }
 }

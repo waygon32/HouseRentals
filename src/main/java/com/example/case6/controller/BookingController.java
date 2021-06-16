@@ -9,7 +9,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -30,12 +32,13 @@ public class BookingController {
 
     @GetMapping
     //lấy ra list booking của 1 người,tự động đổi trạng thái bookingStatus trước ngày nhận phòng  1 ngày
-    public ResponseEntity<?> getAllBookingByUserId(){
+    public ResponseEntity<?> getAllBookingByUserId() {
         LocalDate today = LocalDate.now();
-        LocalDate currentDate = today.plusDays(1);
+        Date currentDate = java.sql.Date.valueOf(today.plusDays(1));
         List<Booking> list = (List<Booking>) bookingService.findAll();
+
         for (Booking booking : list) {
-            if (booking.getCheckinDate().toString().compareTo(currentDate.toString()) == 0) {
+            if (currentDate.compareTo(booking.getCheckinDate()) == 0) {
                 booking.setBookingStatus(0);
                 bookingService.save(booking);
             }
