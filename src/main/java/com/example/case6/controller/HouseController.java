@@ -3,6 +3,7 @@ package com.example.case6.controller;
 import com.example.case6.model.House;
 
 import com.example.case6.model.Images;
+import com.example.case6.repository.IImageRepository;
 import com.example.case6.service.house.IHouseService;
 import com.example.case6.service.image.IImageService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 import java.awt.*;
 import java.util.Date;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @RestController
 @CrossOrigin("*")
@@ -22,6 +25,8 @@ public class HouseController {
     private IHouseService houseService;
     @Autowired
     private IImageService imageService;
+    @Autowired
+    private IImageRepository imageRepository;
 
     @GetMapping
     public ResponseEntity<Iterable<House>> findAllHouse() {
@@ -38,11 +43,15 @@ public class HouseController {
         return new ResponseEntity<>(houseService.save(house), HttpStatus.OK);
     }
 
-    @GetMapping("/detail/{id}")
-    public ResponseEntity<House> getHouse(@PathVariable Long id) {
-        Optional<House> productOptional = houseService.findById(id);
-        return productOptional.map(house -> new ResponseEntity<>(house, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
-    }
+//    @GetMapping("/detail/{id}")
+//    public ResponseEntity<House> getHouseById(@PathVariable Long id) {
+//        Optional<House> houseOptional = houseService.findById(id);
+//        Iterable<Images> images = imageRepository.getImagesByHouseHouseId(id);
+//        houseOptional.get().setImagesList(StreamSupport.stream(images.spliterator(), false).collect(Collectors.toList()));
+//
+//        return houseOptional.map(house -> new ResponseEntity<>(house, HttpStatus.OK))
+//                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+//    }
 
     @PutMapping("/{id}")
     public ResponseEntity<House> updateProduct(@PathVariable Long id, @RequestBody House house) {
@@ -68,10 +77,13 @@ public class HouseController {
         Iterable<House> houses = houseService.findHouse(search, checkin, checkout);
         return new ResponseEntity<>(houses, HttpStatus.OK);
     }
-//    @GetMapping("/{id}/images")
-//    public ResponseEntity<Iterable<Images>> getAllImageByProduct(@PathVariable Long id) {
-//        Optional<House> houseOptional = houseService.findById(id);
+    @GetMapping("/detail/{id}")
+    public ResponseEntity<House> getProductDetail(@PathVariable Long id) {
+        Optional<House> houseResult = houseService.findById(id);
+        Iterable<Images> images = imageRepository.findImagesByHouseHouseId(id);
+        houseResult.get().setImagesList(StreamSupport.stream(images.spliterator(), false).collect(Collectors.toList()));
+        return houseResult.map(house -> new ResponseEntity<>(house,HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
 //        return houseOptional.map(house -> new ResponseEntity<>(imageService.findAllByHouse(house), HttpStatus.OK))
 //                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
-//    }
+    }
 }

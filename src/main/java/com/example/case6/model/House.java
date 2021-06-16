@@ -43,7 +43,7 @@ public class House {
 //    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 //    private List<Images> imagesList;
     @OneToMany
-        @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+        @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "linkImage")
     private List<Images> imagesList;
 //    @OneToMany(mappedBy = "houseId")
 //    private List<Images> imagesList;
