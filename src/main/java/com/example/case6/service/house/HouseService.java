@@ -38,6 +38,8 @@ public class HouseService implements IHouseService {
         return houseRepository.findHouse(search,checkin,checkout);
     }
 
+
+
     @Override
     public Iterable<House> findAll() {
         Iterable<House> houses = houseRepository.findAll();
@@ -54,4 +56,5 @@ public class HouseService implements IHouseService {
     public Optional<House> findById(Long id) {
         return houseRepository.findById(id);
     }
+
 }
