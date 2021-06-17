@@ -106,4 +106,9 @@ public class AuthController {
         }
         return "redirect:/";
     }
+    @GetMapping("/{id}")
+    public ResponseEntity<Users> getUser(@PathVariable("id") Long id) {
+        Users users = userService.findbyId(id);
+        return new ResponseEntity<>(users, HttpStatus.OK);
+    }
 }

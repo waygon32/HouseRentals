@@ -40,4 +40,10 @@ public class BookingService implements IBookingService {
     public List<Booking> getBookingsByHouseHouseId(Long id) {
         return bookingRepository.getBookingsByHouseHouseId(id);
     }
+
+    @Override
+    public Iterable<Booking> getAllBookingByUser(Long id) {
+        return bookingRepository.getBookingsByUsersUserId(id);
+    }
+
 }

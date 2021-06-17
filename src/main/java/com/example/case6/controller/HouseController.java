@@ -68,22 +68,31 @@ public class HouseController {
         Iterable<House> houses = houseService.findHouse(search, checkin, checkout);
         return new ResponseEntity<>(houses, HttpStatus.OK);
     }
+
     @GetMapping("/detail/{id}")
     public ResponseEntity<House> getProductDetail(@PathVariable Long id) {
         Optional<House> houseResult = houseService.findById(id);
         Iterable<Images> images = imageRepository.findImagesByHouseHouseId(id);
         houseResult.get().setImagesList(StreamSupport.stream(images.spliterator(), false).collect(Collectors.toList()));
-        return houseResult.map(house -> new ResponseEntity<>(house,HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        return houseResult.map(house -> new ResponseEntity<>(house, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
 //        return houseOptional.map(house -> new ResponseEntity<>(imageService.findAllByHouse(house), HttpStatus.OK))
 //                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @GetMapping("/myHouses/{userId}")
     public ResponseEntity<Iterable<House>> getListHouseOfUserId(@PathVariable("userId") Long id) {
-        if(id==null){
+        if (id == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         List<House> list = (List<House>) houseService.getListHouseOfUser(id);
-        return  new ResponseEntity<>(list,HttpStatus.OK);
+        return new ResponseEntity<>(list, HttpStatus.OK);
+    }
+
+    @PutMapping("/{id}/{status}")
+    public ResponseEntity<?> updateHouse(@PathVariable("id") Long id, @PathVariable("status") String status) {
+        House house = houseService.findById(id).get();
+        house.setHouseStatus(status);
+        houseService.save(house);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

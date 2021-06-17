@@ -30,12 +30,12 @@ public class BookingController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @GetMapping
+    @GetMapping("/{id}")
     //lấy ra list booking của 1 người,tự động đổi trạng thái bookingStatus trước ngày nhận phòng  1 ngày
-    public ResponseEntity<?> getAllBookingByUserId() {
+    public ResponseEntity<?> getAllBookingByUserId(@PathVariable("id") Long id) {
         LocalDate today = LocalDate.now();
         Date currentDate = java.sql.Date.valueOf(today.plusDays(1));
-        List<Booking> list = (List<Booking>) bookingService.findAll();
+        List<Booking> list = (List<Booking>) bookingService.getAllBookingByUser(id);
 
         for (Booking booking : list) {
             if (currentDate.compareTo(booking.getCheckinDate()) == 0) {
@@ -43,7 +43,7 @@ public class BookingController {
                 bookingService.save(booking);
             }
         }
-        return new ResponseEntity<>(bookingService.findAll(), HttpStatus.OK);
+        return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
