@@ -27,6 +27,8 @@ import java.util.Set;
 @RestController
 @CrossOrigin("*")
 public class AuthController {
+    public static final String CONFIRM_SUCCESS = "Confirm Success";
+    public static final String CONFIRM_FAIL = "confirm fail";
     @Autowired
     private AuthenticationManager authenticationManager;
 
@@ -47,7 +49,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Users users){
+    public ResponseEntity<?> login(@RequestBody Users users) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(users.getUsername(), users.getPassword()));
 
@@ -56,21 +58,21 @@ public class AuthController {
         String jwt = jwtService.generateTokenLogin(authentication);
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         Users curentUser = userService.findByUsername(users.getUsername());
-        return ResponseEntity.ok(new JwtResponse(curentUser.getUserId(), userDetails.getUsername(), jwt ,userDetails.getAuthorities()));
+        return ResponseEntity.ok(new JwtResponse(curentUser.getUserId(), userDetails.getUsername(), jwt, userDetails.getAuthorities()));
     }
 
     @PostMapping("/register")
-    public  ResponseEntity<Users> register( @RequestBody Users users, BindingResult bindingResult){
-        if(bindingResult.hasErrors()){
+    public ResponseEntity<Users> register(@RequestBody Users users, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        if (userService.existsByUsername(users.getUsername())){
+        if (userService.existsByUsername(users.getUsername())) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        if (userService.existsByEmail(users.getEmail())){
+        if (userService.existsByEmail(users.getEmail())) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        if(userService.existByPhoneNumber(users.getPhone())){
+        if (userService.existByPhoneNumber(users.getPhone())) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         users.setPassword(passwordEncoder.encode(users.getPassword()));
@@ -82,10 +84,10 @@ public class AuthController {
         return new ResponseEntity<>(userService.save(users), HttpStatus.CREATED);
     }
 
-    @PostMapping("/edit-profile")
-    public ResponseEntity<Users> updateUser( @RequestBody Users users, BindingResult bindingResult) {
+    @PutMapping("/edit-profile")
+    public ResponseEntity<Users> updateUser(@RequestBody Users users, BindingResult bindingResult) {
         Users currentUser = userService.findbyId(getCurrentUser().getId());
-        if(currentUser.getUserId()==null){
+        if (currentUser.getUserId() == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         currentUser.setFullname(users.getFullname());
@@ -98,14 +100,25 @@ public class AuthController {
         return new ResponseEntity<Users>(currentUser, HttpStatus.OK);
     }
 
-    @GetMapping("logout")
-    public String logout(HttpServletRequest request, HttpServletResponse response){
+    @GetMapping("/logout")
+    public String logout(HttpServletRequest request, HttpServletResponse response) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication!=null){
-            new SecurityContextLogoutHandler().logout(request,response,authentication);
+        if (authentication != null) {
+            new SecurityContextLogoutHandler().logout(request, response, authentication);
         }
         return "redirect:/";
     }
+
+    @PostMapping("/confirmPassword")
+    public ResponseEntity<?> confirmPassword(@RequestBody String password) {
+        Users currentUser = userService.findbyId(getCurrentUser().getId());
+        if (currentUser.getPassword().equals(passwordEncoder.encode(password))) {
+            return new ResponseEntity<>(CONFIRM_SUCCESS, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(CONFIRM_FAIL, HttpStatus.BAD_REQUEST);
+        }
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<Users> getUser(@PathVariable("id") Long id) {
         Users users = userService.findbyId(id);
