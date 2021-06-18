@@ -1,6 +1,7 @@
 package com.example.case6.model;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -39,14 +40,10 @@ public class House {
     private String pricePerDay;
     @NotNull
     private String houseStatus;
-//    @OneToMany
-//    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-//    private List<Images> imagesList;
+
     @OneToMany
-        @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "linkImage")
+    @JsonIgnore
     private List<Images> imagesList;
-//    @OneToMany(mappedBy = "houseId")
-//    private List<Images> imagesList;
     @ManyToOne
     @JoinColumn(name = "users_id")
     private Users users;

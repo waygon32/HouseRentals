@@ -3,15 +3,22 @@ package com.example.case6.controller;
 import com.example.case6.model.House;
 
 import com.example.case6.model.Images;
+import com.example.case6.model.Users;
 import com.example.case6.repository.IImageRepository;
 import com.example.case6.service.house.IHouseService;
 import com.example.case6.service.image.IImageService;
+import com.example.case6.service.user.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 import java.awt.*;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -22,10 +29,30 @@ import java.util.stream.StreamSupport;
 @CrossOrigin("*")
 @RequestMapping("/houses")
 public class HouseController {
+    //    convert value string to date
+    @InitBinder
+    public void initBinder(WebDataBinder binder){
+        binder.registerCustomEditor(       Date.class,
+                new CustomDateEditor(new SimpleDateFormat("yyyy-MM-dd"), true, 10));
+    }
+    //    get UserCurrent
+    private String getPrincipal() {
+        String userName = null;
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (principal instanceof UserDetails) {
+            userName = ((UserDetails) principal).getUsername();
+        } else {
+            userName = principal.toString();
+        }
+        return userName;
+    }
     @Autowired
     private IHouseService houseService;
     @Autowired
     private IImageService imageService;
+    @Autowired
+    private IUserService userService;
     @Autowired
     private IImageRepository imageRepository;
 
@@ -41,7 +68,15 @@ public class HouseController {
 
     @PostMapping
     public ResponseEntity<House> createHouse(@RequestBody House house) {
+        Users userCurrent = userService.findByUsername(getPrincipal());
+        house.setUsers(userCurrent);
         return new ResponseEntity<>(houseService.save(house), HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<House> getHouse(@PathVariable Long id) {
+        Optional<House> productOptional = houseService.findById(id);
+        return productOptional.map(house -> new ResponseEntity<>(house, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @PutMapping("/{id}")
@@ -69,15 +104,6 @@ public class HouseController {
         return new ResponseEntity<>(houses, HttpStatus.OK);
     }
 
-    @GetMapping("/detail/{id}")
-    public ResponseEntity<House> getProductDetail(@PathVariable Long id) {
-        Optional<House> houseResult = houseService.findById(id);
-        Iterable<Images> images = imageRepository.findImagesByHouseHouseId(id);
-        houseResult.get().setImagesList(StreamSupport.stream(images.spliterator(), false).collect(Collectors.toList()));
-        return houseResult.map(house -> new ResponseEntity<>(house, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
-//        return houseOptional.map(house -> new ResponseEntity<>(imageService.findAllByHouse(house), HttpStatus.OK))
-//                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
-    }
 
     @GetMapping("/myHouses/{userId}")
     public ResponseEntity<Iterable<House>> getListHouseOfUserId(@PathVariable("userId") Long id) {
@@ -94,5 +120,18 @@ public class HouseController {
         house.setHouseStatus(status);
         houseService.save(house);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+    @GetMapping("/detail/{id}")
+    public ResponseEntity<House> getProductDetail(@PathVariable Long id) {
+        Optional<House> houseResult = houseService.findById(id);
+        Iterable<Images> images = imageRepository.findImagesByHouseHouseId(id);
+        houseResult.get().setImagesList(StreamSupport.stream(images.spliterator(), false).collect(Collectors.toList()));
+        return houseResult.map(house -> new ResponseEntity<>(house, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+    @GetMapping("/{id}/images")
+    public ResponseEntity<Iterable<Images>> getAllImageByProduct(@PathVariable Long id) {
+        Optional<House> houseOptional = houseService.findById(id);
+        return houseOptional.map(house -> new ResponseEntity<>(imageService.findAllByHouse(house), HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 }
