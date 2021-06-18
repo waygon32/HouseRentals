@@ -38,10 +38,10 @@ public class ImageService implements IImageService {
         imageRepository.deleteById(id);
     }
 
-//    @Override
-//    public Iterable<Images> getImagesByHouseId(Long houseId) {
-//        return imageRepository.getImagesByHouseHouseId(houseId);
-//    }
+    @Override
+    public Iterable<Images> getImagesByHouseId(Long houseId) {
+        return imageRepository.getImagesByHouseHouseId(houseId);
+    }
 
     @Override
     public Iterable<Images> findAllByHouse(House house) {

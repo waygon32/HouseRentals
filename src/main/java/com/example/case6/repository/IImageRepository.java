@@ -5,6 +5,10 @@ import com.example.case6.model.Images;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface IImageRepository extends JpaRepository<Images,Long> {
-//    Iterable<Images> getImagesByHouseHouseId(Long houseId);
+
     Iterable<Images> findAllByHouse(House house);
-    }
+
+    Iterable<Images> findImagesByHouseHouseId(Long id);
+
+    Iterable<Images> getImagesByHouseHouseId(Long houseId);
+}
