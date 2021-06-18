@@ -29,6 +29,8 @@ import java.util.Set;
 public class AuthController {
     public static final String CONFIRM_SUCCESS = "Confirm Success";
     public static final String CONFIRM_FAIL = "confirm fail";
+    public static final String SUCCESS = "Success";
+    public static final String USERNAME_ALREADY_EXISTED = "Success";
     @Autowired
     private AuthenticationManager authenticationManager;
 
@@ -123,5 +125,18 @@ public class AuthController {
     public ResponseEntity<Users> getUser(@PathVariable("id") Long id) {
         Users users = userService.findbyId(id);
         return new ResponseEntity<>(users, HttpStatus.OK);
+    }
+
+    @GetMapping("checkusername/{username}")
+    public ResponseEntity<Boolean> isUsernameExists(@PathVariable String username){
+        return ResponseEntity.ok(userService.existsByUsername(username));
+    }
+    @GetMapping("checkemail/{email}")
+    public ResponseEntity<Boolean> isEmailExists(@PathVariable String email){
+        return ResponseEntity.ok(userService.existsByEmail(email));
+    }
+    @GetMapping("checkphone/{phone}")
+    public ResponseEntity<Boolean> isPhoneNumberExists(@PathVariable String phone){
+        return ResponseEntity.ok(userService.existByPhoneNumber(phone));
     }
 }
