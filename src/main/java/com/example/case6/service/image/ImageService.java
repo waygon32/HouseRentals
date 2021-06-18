@@ -18,11 +18,6 @@ public class ImageService implements IImageService {
         return imageRepository.findAll();
     }
 
-//    @Override
-//    public Iterable<Images> findAll(int page, int size) {
-//        return null;
-//    }
-
     @Override
     public Optional<Images> findById(Long id) {
         return imageRepository.findById(id);
@@ -46,5 +41,10 @@ public class ImageService implements IImageService {
     @Override
     public Iterable<Images> findAllByHouse(House house) {
         return imageRepository.findAllByHouse(house);
+    }
+
+    @Override
+    public Iterable<Images> findImagesByHouseHouseId(Long id) {
+        return imageRepository.findImagesByHouseHouseId(id);
     }
 }

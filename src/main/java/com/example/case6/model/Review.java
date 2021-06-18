@@ -21,6 +21,11 @@ public class Review {
     private String comment;
     @NotNull
     private int rating;
+    @ManyToOne
+    private Users user;
+    @ManyToOne
+    @JoinColumn
+    private House house;
 //    @OneToOne
 //    @JoinColumn(name = "booking_id")
 //    private Booking booking;

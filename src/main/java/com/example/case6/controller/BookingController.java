@@ -9,7 +9,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -21,26 +23,27 @@ public class BookingController {
 
     @PostMapping
     public ResponseEntity<?> createBooking(@Valid @RequestBody Booking booking, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
-        }
+//        if (bindingResult.hasErrors()) {
+//            return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+//        }
         bookingService.save(booking);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @GetMapping
+    @GetMapping("/{id}")
     //lấy ra list booking của 1 người,tự động đổi trạng thái bookingStatus trước ngày nhận phòng  1 ngày
-    public ResponseEntity<?> getAllBookingByUserId() {
+    public ResponseEntity<?> getAllBookingByUserId(@PathVariable("id") Long id) {
         LocalDate today = LocalDate.now();
-        LocalDate currentDate = today.plusDays(1);
-        List<Booking> list = (List<Booking>) bookingService.findAll();
+        Date currentDate = java.sql.Date.valueOf(today.plusDays(1));
+        List<Booking> list = (List<Booking>) bookingService.getAllBookingByUser(id);
+
         for (Booking booking : list) {
-            if (booking.getCheckinDate().toString().compareTo(currentDate.toString()) == 0) {
+            if (currentDate.compareTo(booking.getCheckinDate()) == 0) {
                 booking.setBookingStatus(0);
                 bookingService.save(booking);
             }
         }
-        return new ResponseEntity<>(bookingService.findAll(), HttpStatus.OK);
+        return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
@@ -57,6 +60,6 @@ public class BookingController {
         return new ResponseEntity<>(bookingList, HttpStatus.OK);
     }
 
-}
+} 
 
 

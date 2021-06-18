@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface IBookingService extends IGeneralService<Booking> {
     List<Booking> getBookingsByHouseHouseId(Long id);
+    Iterable<Booking>getAllBookingByUser(Long id);
 }

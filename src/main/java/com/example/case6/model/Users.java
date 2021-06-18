@@ -12,6 +12,7 @@ import org.springframework.web.method.support.InvocableHandlerMethod;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 import java.util.List;
@@ -28,10 +29,13 @@ public class Users {
     private Long userId;
 
     @NotNull
+    @Size(max = 30)
+    @Pattern(regexp = "[A-Za-z ]+")
     private String fullname;
 
     @NotNull
-    @Size(min = 6)
+    @Size(min = 6, max=20)
+    @Pattern(regexp = "^(?=[a-zA-Z0-9._])(?!.*[_.]{2})[^_.].*[^_.]$")
     private String username;
 
     @NotNull
@@ -40,6 +44,7 @@ public class Users {
 
     @NotNull
     @Size(min = 10, max = 10)
+    @Pattern(regexp = "((0)+([0-9]{9})\\b)")
     private String phone;
 
     @NotNull
@@ -54,7 +59,7 @@ public class Users {
     @OneToMany
     @JsonIgnore
     private List<Booking> bookingList;
-
+     @JsonIgnore
     @ManyToMany(fetch = FetchType.EAGER)
     private Set<Role> roles;
 }

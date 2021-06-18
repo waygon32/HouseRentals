@@ -8,20 +8,42 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.Optional;
+
 @Service
 public class UserService implements IUserService {
     @Autowired
     private IUserRepository userRepository;
 
+//    @Override
+//    public Optional<Users> fillbyId(Long id) {
+//        return userRepository.findById(id);
+//    }
+
     @Override
-    public Optional<Users> fillbyId(Long id) {
-        return userRepository.findById(id);
+    public Iterable<Users> findAll() {
+        return null;
+    }
+
+    @Override
+    public Optional<Users> findById(Long id) {
+        return Optional.empty();
+    }
+
+    @Override
+    public Users findbyId(Long id) {
+        return userRepository.findUsersByUserId(id);
     }
 
     @Override
     public Users save(Users users) {
         return userRepository.save(users);
+    }
+
+    @Override
+    public void remove(Long id) {
+
     }
 
     @Override
@@ -42,6 +64,11 @@ public class UserService implements IUserService {
     @Override
     public boolean existByPhoneNumber(String phone) {
         return userRepository.existsByPhone(phone);
+    }
+
+    @Override
+    public void update(Users users) {
+        userRepository.save(users);
     }
 
     @Override
