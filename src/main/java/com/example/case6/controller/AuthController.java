@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -29,8 +31,8 @@ import java.util.Set;
 public class AuthController {
     public static final String CONFIRM_SUCCESS = "Confirm Success";
     public static final String CONFIRM_FAIL = "confirm fail";
-    public static final String SUCCESS = "Success";
-    public static final String USERNAME_ALREADY_EXISTED = "Success";
+    public static final String LOGINSUCCESS = "Success";
+    public static final String LOGINFALSE = "Login false";
     @Autowired
     private AuthenticationManager authenticationManager;
 
@@ -51,17 +53,25 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Users users) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(users.getUsername(), users.getPassword()));
+    public ResponseEntity<?> login(@RequestBody Users users) throws Exception {
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(users.getUsername(), users.getPassword()));
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        String jwt = jwtService.generateTokenLogin(authentication);
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        Users curentUser = userService.findByUsername(users.getUsername());
-        return ResponseEntity.ok(new JwtResponse(curentUser.getUserId(), userDetails.getUsername(), jwt, userDetails.getAuthorities()));
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            String jwt = jwtService.generateTokenLogin(authentication);
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            Users curentUser = userService.findByUsername(users.getUsername());
+            return ResponseEntity.ok(new JwtResponse(curentUser.getUserId(), userDetails.getUsername(), jwt, userDetails.getAuthorities()));
+        } catch (DisabledException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(LOGINFALSE, HttpStatus.OK);
+        } catch (BadCredentialsException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(LOGINFALSE, HttpStatus.OK);
+        }
     }
+
 
     @PostMapping("/register")
     public ResponseEntity<Users> register(@RequestBody Users users, BindingResult bindingResult) {
@@ -87,9 +97,16 @@ public class AuthController {
     }
 
     @PutMapping("/edit-profile")
-    public ResponseEntity<Users> updateUser(@RequestBody Users users, BindingResult bindingResult) {
+    public ResponseEntity<Users> updateUser(@RequestBody Users users) {
         Users currentUser = userService.findbyId(getCurrentUser().getId());
         if (currentUser.getUserId() == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        if (userService.existsByEmail(users.getEmail()) &&
+                !(users.getEmail().equals(currentUser.getEmail())) ||
+                userService.existByPhoneNumber(users.getPhone()) &&
+                        !(users.getPhone().equals(currentUser.getPhone()))
+        ) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         currentUser.setFullname(users.getFullname());
@@ -97,19 +114,20 @@ public class AuthController {
         currentUser.setPhone(users.getPhone());
         currentUser.setEmail(users.getEmail());
         currentUser.setAvatarUrl(users.getAvatarUrl());
-        currentUser.setRoles(users.getRoles());
-        userService.update(currentUser);
-        return new ResponseEntity<Users>(currentUser, HttpStatus.OK);
+//            currentUser.setRoles(users.getRoles());
+        userService.save(currentUser);
+        return new ResponseEntity<>(currentUser, HttpStatus.OK);
+
     }
 
-    @GetMapping("/logout")
-    public String logout(HttpServletRequest request, HttpServletResponse response) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null) {
-            new SecurityContextLogoutHandler().logout(request, response, authentication);
-        }
-        return "redirect:/";
-    }
+//    @GetMapping("/logout")
+//    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        if (authentication != null) {
+//            new SecurityContextLogoutHandler().logout(request, response, authentication);
+//        }
+//        return  new ResponseEntity<>(HttpStatus.OK);
+//    }
 
     @PostMapping("/confirmPassword")
     public ResponseEntity<?> confirmPassword(@RequestBody String password) {
@@ -128,15 +146,18 @@ public class AuthController {
     }
 
     @GetMapping("checkusername/{username}")
-    public ResponseEntity<Boolean> isUsernameExists(@PathVariable String username){
+    public ResponseEntity<Boolean> isUsernameExists(@PathVariable String username) {
         return ResponseEntity.ok(userService.existsByUsername(username));
     }
+
     @GetMapping("checkemail/{email}")
-    public ResponseEntity<Boolean> isEmailExists(@PathVariable String email){
+    public ResponseEntity<Boolean> isEmailExists(@PathVariable String email) {
         return ResponseEntity.ok(userService.existsByEmail(email));
     }
+
     @GetMapping("checkphone/{phone}")
-    public ResponseEntity<Boolean> isPhoneNumberExists(@PathVariable String phone){
+    public ResponseEntity<Boolean> isPhoneNumberExists(@PathVariable String phone) {
         return ResponseEntity.ok(userService.existByPhoneNumber(phone));
     }
+
 }

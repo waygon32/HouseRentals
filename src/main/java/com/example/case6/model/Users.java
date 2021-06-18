@@ -59,7 +59,7 @@ public class Users {
     @OneToMany
     @JsonIgnore
     private List<Booking> bookingList;
-
+     @JsonIgnore
     @ManyToMany(fetch = FetchType.EAGER)
     private Set<Role> roles;
 }
