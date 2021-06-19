@@ -50,4 +50,7 @@ public class BookingService implements IBookingService {
     public Booking findBookingHouseIdAndCurrentDate(Long houseId, Date currentDate){
         return bookingRepository.findBookingByHouseIdAndCurrentDateRage(houseId,currentDate);
     }
+    public List<Booking> setBookingStatusByCurrentDate(Date date){
+        return bookingRepository.getListBookingHaveDone(date);
+    }
 }

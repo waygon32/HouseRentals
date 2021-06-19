@@ -69,20 +69,9 @@ public class HouseController {
         List<House> list = (List<House>) houseService.findAll();
         LocalDate localDate = LocalDate.now();
         Date today = java.sql.Date.valueOf(localDate);
-        System.out.println(today);
-        for (House house : list) {
-            Booking booking = bookingService.findBookingHouseIdAndCurrentDate(house.getHouseId(), today);
-            if (booking == null) {
-                System.out.println(" Khong co Booking nao trong today thi houseStatus ->blank");
-                if (house.getHouseStatus() != "upgrade" && house.getHouseStatus() != "blank") {
-                    updateHouse(house.getHouseId(), "blank");
-                }
-            } else {
-                System.out.println("Co nguoi dang thue houseStatus => rent");
-                updateHouse(house.getHouseId(), "rent");
-            }
-            houseService.save(house);
-        }
+
+        setHouseStatusByCurrentDateAndBooking(list, today);
+        setBookingStatusByCurrentDate(today);
         return new ResponseEntity<>(houseService.findAll(), HttpStatus.OK);
     }
 
@@ -161,5 +150,37 @@ public class HouseController {
         Optional<House> houseOptional = houseService.findById(id);
         return houseOptional.map(house -> new ResponseEntity<>(imageService.findAllByHouse(house), HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
+    public void setBookingStatusByCurrentDate(Date date) {
+        List<Booking> listBookings = bookingService.setBookingStatusByCurrentDate(date);
+        if (listBookings.isEmpty()) {
+            return;
+        }
+        for (Booking booking : listBookings) {
+            System.out.println(booking.getBookingStatus());
+            booking.setBookingStatus(1);
+            bookingService.save(booking);
+            System.out.println("===================AFTER SET================");
+            System.out.println(booking.getBookingStatus());
+
+        }
+    }
+
+    public void setHouseStatusByCurrentDateAndBooking(List<House> houseList, Date current) {
+        for (House house : houseList) {
+            Booking booking = bookingService.findBookingHouseIdAndCurrentDate(house.getHouseId(), current);
+            if (booking == null) {
+                System.out.println(" Khong co Booking nao trong today thi houseStatus ->blank");
+                if (house.getHouseStatus() != "upgrade" && house.getHouseStatus() != "blank") {
+                    updateHouse(house.getHouseId(), "blank");
+                }
+            } else {
+                System.out.println("Co nguoi dang thue houseStatus => rent");
+                updateHouse(house.getHouseId(), "rent");
+            }
+            houseService.save(house);
+        }
+
     }
 }

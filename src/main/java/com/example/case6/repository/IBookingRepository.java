@@ -14,7 +14,11 @@ public interface IBookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> getBookingsByHouseHouseId(Long id);
 
     Iterable<Booking> getBookingsByUsersUserId(Long id);
-    @Query(nativeQuery = true ,value = "select * from house_rentals.booking where house_id=?1 and  checkin_date <= ?2 and checkout_date >= ?2")
-    Booking findBookingByHouseIdAndCurrentDateRage(Long id,Date date);
+
+    @Query(nativeQuery = true, value = "select * from house_rentals.booking where house_id=?1 and  checkin_date <= ?2 and checkout_date >= ?2")
+    Booking findBookingByHouseIdAndCurrentDateRage(Long id, Date date);
+
+    @Query(nativeQuery = true, value = "select  * from house_rentals.booking where checkout_Date <=?1")
+    List<Booking> getListBookingHaveDone(Date date);
 
 }
