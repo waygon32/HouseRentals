@@ -74,7 +74,9 @@ public class HouseController {
             Booking booking = bookingService.findBookingHouseIdAndCurrentDate(house.getHouseId(), today);
             if (booking == null) {
                 System.out.println(" Khong co Booking nao trong today thi houseStatus ->blank");
-                updateHouse(house.getHouseId(), "blank");
+                if (house.getHouseStatus() != "upgrade" && house.getHouseStatus() != "blank") {
+                    updateHouse(house.getHouseId(), "blank");
+                }
             } else {
                 System.out.println("Co nguoi dang thue houseStatus => rent");
                 updateHouse(house.getHouseId(), "rent");
