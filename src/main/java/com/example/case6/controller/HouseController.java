@@ -1,10 +1,12 @@
 package com.example.case6.controller;
 
+import com.example.case6.model.Booking;
 import com.example.case6.model.House;
 
 import com.example.case6.model.Images;
 import com.example.case6.model.Users;
 import com.example.case6.repository.IImageRepository;
+import com.example.case6.service.booking.BookingService;
 import com.example.case6.service.house.IHouseService;
 import com.example.case6.service.image.IImageService;
 import com.example.case6.service.user.IUserService;
@@ -19,6 +21,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.awt.*;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -31,10 +35,11 @@ import java.util.stream.StreamSupport;
 public class HouseController {
     //    convert value string to date
     @InitBinder
-    public void initBinder(WebDataBinder binder){
-        binder.registerCustomEditor(       Date.class,
+    public void initBinder(WebDataBinder binder) {
+        binder.registerCustomEditor(Date.class,
                 new CustomDateEditor(new SimpleDateFormat("yyyy-MM-dd"), true, 10));
     }
+
     //    get UserCurrent
     private String getPrincipal() {
         String userName = null;
@@ -47,6 +52,7 @@ public class HouseController {
         }
         return userName;
     }
+
     @Autowired
     private IHouseService houseService;
     @Autowired
@@ -55,11 +61,29 @@ public class HouseController {
     private IUserService userService;
     @Autowired
     private IImageRepository imageRepository;
+    @Autowired
+    private BookingService bookingService;
 
     @GetMapping
-    public ResponseEntity<Iterable<House>> findAllHouse() {
+    public ResponseEntity<?> findAllHouse() {
+        List<House> list = (List<House>) houseService.findAll();
+        LocalDate localDate = LocalDate.now();
+        Date today = java.sql.Date.valueOf(localDate);
+        System.out.println(today);
+        for (House house : list) {
+            Booking booking = bookingService.findBookingHouseIdAndCurrentDate(house.getHouseId(), today);
+            if (booking == null) {
+                System.out.println(" Khong co Booking nao trong today thi houseStatus ->blank");
+                updateHouse(house.getHouseId(), "blank");
+            } else {
+                System.out.println("Co nguoi dang thue houseStatus => rent");
+                updateHouse(house.getHouseId(), "rent");
+            }
+            houseService.save(house);
+        }
         return new ResponseEntity<>(houseService.findAll(), HttpStatus.OK);
     }
+
 //    @GetMapping("/pagination")
 //    public ResponseEntity<Iterable<House>> getAllHouseUsingPagination(@RequestParam int page, @RequestParam int size) {
 //        Iterable<House> houses = houseService.findAllHouse(page, size);
@@ -121,6 +145,7 @@ public class HouseController {
         houseService.save(house);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
     @GetMapping("/detail/{id}")
     public ResponseEntity<House> getProductDetail(@PathVariable Long id) {
         Optional<House> houseResult = houseService.findById(id);
@@ -128,6 +153,7 @@ public class HouseController {
         houseResult.get().setImagesList(StreamSupport.stream(images.spliterator(), false).collect(Collectors.toList()));
         return houseResult.map(house -> new ResponseEntity<>(house, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
+
     @GetMapping("/{id}/images")
     public ResponseEntity<Iterable<Images>> getAllImageByProduct(@PathVariable Long id) {
         Optional<House> houseOptional = houseService.findById(id);

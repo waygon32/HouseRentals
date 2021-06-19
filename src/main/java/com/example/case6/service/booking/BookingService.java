@@ -5,6 +5,7 @@ import com.example.case6.repository.IBookingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,4 +47,7 @@ public class BookingService implements IBookingService {
         return bookingRepository.getBookingsByUsersUserId(id);
     }
 
+    public Booking findBookingHouseIdAndCurrentDate(Long houseId, Date currentDate){
+        return bookingRepository.findBookingByHouseIdAndCurrentDateRage(houseId,currentDate);
+    }
 }

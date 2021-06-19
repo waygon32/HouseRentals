@@ -15,10 +15,10 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 public class Images{
     @Id
-    @GeneratedValue(strategy =  GenerationType.IDENTITY)
+    @GeneratedValue(strategy =  GenerationType.IDENTITY )
     private Long id ;
 
-    @ManyToOne(cascade=CascadeType.MERGE)
+    @ManyToOne(cascade=CascadeType.MERGE,fetch =FetchType.LAZY)
     private House house;
     @Nullable
     private String linkImage;
