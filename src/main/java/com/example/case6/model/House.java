@@ -43,7 +43,10 @@ public class House {
     private String houseStatus;
 
     @OneToMany
-    @JsonIgnoreProperties({"id", "house"})
+//    @JsonIgnoreProperties({"id", "house"})
+    @Transient
+    //Transient Jpa hieu no k phai 1 persitent -> save ko loi
+//    @Column(insertable = false,updatable = false)
     private List<Images> imagesList;
     @ManyToOne
     @JoinColumn(name = "users_id")

@@ -7,6 +7,8 @@ import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDate;
+import java.util.Date;
 
 
 @Data
@@ -21,11 +23,14 @@ public class Review {
     private String comment;
     @NotNull
     private int rating;
-    @ManyToOne
-    private Users user;
+    private Date postDate;
     @ManyToOne
     @JoinColumn
+    private Users user;
+    @ManyToOne
     private House house;
+
+
 //    @OneToOne
 //    @JoinColumn(name = "booking_id")
 //    private Booking booking;

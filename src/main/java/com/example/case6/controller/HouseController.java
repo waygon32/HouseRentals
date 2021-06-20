@@ -1,12 +1,13 @@
 package com.example.case6.controller;
 
-import com.example.case6.model.House;
+import com.example.case6.model.*;
 
-import com.example.case6.model.Images;
-import com.example.case6.model.Users;
 import com.example.case6.repository.IImageRepository;
+import com.example.case6.service.booking.BookingService;
+import com.example.case6.service.booking.IBookingService;
 import com.example.case6.service.house.IHouseService;
 import com.example.case6.service.image.IImageService;
+import com.example.case6.service.review.IReviewService;
 import com.example.case6.service.user.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
@@ -19,6 +20,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.awt.*;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -31,10 +34,11 @@ import java.util.stream.StreamSupport;
 public class HouseController {
     //    convert value string to date
     @InitBinder
-    public void initBinder(WebDataBinder binder){
-        binder.registerCustomEditor(       Date.class,
+    public void initBinder(WebDataBinder binder) {
+        binder.registerCustomEditor(Date.class,
                 new CustomDateEditor(new SimpleDateFormat("yyyy-MM-dd"), true, 10));
     }
+
     //    get UserCurrent
     private String getPrincipal() {
         String userName = null;
@@ -47,6 +51,7 @@ public class HouseController {
         }
         return userName;
     }
+
     @Autowired
     private IHouseService houseService;
     @Autowired
@@ -55,16 +60,23 @@ public class HouseController {
     private IUserService userService;
     @Autowired
     private IImageRepository imageRepository;
+    @Autowired
+    private BookingService bookingService;
+    @Autowired
+    private IReviewService reviewService;
 
     @GetMapping
-    public ResponseEntity<Iterable<House>> findAllHouse() {
+    public ResponseEntity<?> findAllHouse() {
+        List<House> list = (List<House>) houseService.findAll();
+        LocalDate localDate = LocalDate.now();
+        Date today = java.sql.Date.valueOf(localDate);
+
+        setHouseStatusByCurrentDateAndBooking(list, today);
+        setBookingStatusByCurrentDate(today);
         return new ResponseEntity<>(houseService.findAll(), HttpStatus.OK);
     }
-//    @GetMapping("/pagination")
-//    public ResponseEntity<Iterable<House>> getAllHouseUsingPagination(@RequestParam int page, @RequestParam int size) {
-//        Iterable<House> houses = houseService.findAllHouse(page, size);
-//        return new ResponseEntity<>(houses, HttpStatus.OK);
-//    }
+
+
 
     @PostMapping
     public ResponseEntity<House> createHouse(@RequestBody House house) {
@@ -121,6 +133,7 @@ public class HouseController {
         houseService.save(house);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
     @GetMapping("/detail/{id}")
     public ResponseEntity<House> getProductDetail(@PathVariable Long id) {
         Optional<House> houseResult = houseService.findById(id);
@@ -128,10 +141,63 @@ public class HouseController {
         houseResult.get().setImagesList(StreamSupport.stream(images.spliterator(), false).collect(Collectors.toList()));
         return houseResult.map(house -> new ResponseEntity<>(house, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
+
     @GetMapping("/{id}/images")
     public ResponseEntity<Iterable<Images>> getAllImageByProduct(@PathVariable Long id) {
         Optional<House> houseOptional = houseService.findById(id);
         return houseOptional.map(house -> new ResponseEntity<>(imageService.findAllByHouse(house), HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
+
+    public void setBookingStatusByCurrentDate(Date date) {
+        List<Booking> listBookings = bookingService.setBookingStatusByCurrentDate(date);
+        if (listBookings.isEmpty()) {
+            return;
+        }
+        for (Booking booking : listBookings) {
+            System.out.println(booking.getBookingStatus());
+            booking.setBookingStatus(1);
+            bookingService.save(booking);
+            System.out.println("===================AFTER SET================");
+            System.out.println(booking.getBookingStatus());
+
+        }
+    }
+
+    public void setHouseStatusByCurrentDateAndBooking(List<House> houseList, Date current) {
+        for (House house : houseList) {
+            Booking booking = bookingService.findBookingHouseIdAndCurrentDate(house.getHouseId(), current);
+            if (booking == null) {
+                System.out.println(" Khong co Booking nao trong today thi houseStatus ->blank");
+                if (house.getHouseStatus() != "upgrade" && house.getHouseStatus() != "blank") {
+                    updateHouse(house.getHouseId(), "blank");
+                }
+            } else {
+                System.out.println("Co nguoi dang thue houseStatus => rent");
+                updateHouse(house.getHouseId(), "rent");
+            }
+            houseService.save(house);
+        }
+
+    }
+
+    @GetMapping("/reviews/{houseId}")
+    public ResponseEntity<Iterable<Review>> getReviewsOfHouse(@PathVariable Long houseId){
+        Iterable<Review> reviews = reviewService.findAllByHouseHouseId(houseId);
+        if(reviews == null){
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+
+        return new ResponseEntity<>(reviews, HttpStatus.OK);
+    }
+    @PostMapping("/createReview/{houseId}")
+    public ResponseEntity<Review> createReview(@RequestBody Review review,@PathVariable Long houseId) {
+        Optional<House> house = houseService.findById(houseId);
+        Users userCurrent = userService.findByUsername(getPrincipal());
+        review.setUser(userCurrent);
+        review.setHouse(house.get());
+        review.setPostDate(new Date());
+        return new ResponseEntity<>(reviewService.save(review), HttpStatus.CREATED);
+    }
+
 }
