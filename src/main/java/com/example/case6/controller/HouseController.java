@@ -1,14 +1,13 @@
 package com.example.case6.controller;
 
-import com.example.case6.model.Booking;
-import com.example.case6.model.House;
+import com.example.case6.model.*;
 
-import com.example.case6.model.Images;
-import com.example.case6.model.Users;
 import com.example.case6.repository.IImageRepository;
 import com.example.case6.service.booking.BookingService;
+import com.example.case6.service.booking.IBookingService;
 import com.example.case6.service.house.IHouseService;
 import com.example.case6.service.image.IImageService;
+import com.example.case6.service.review.IReviewService;
 import com.example.case6.service.user.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
@@ -63,6 +62,8 @@ public class HouseController {
     private IImageRepository imageRepository;
     @Autowired
     private BookingService bookingService;
+    @Autowired
+    private IReviewService reviewService;
 
     @GetMapping
     public ResponseEntity<?> findAllHouse() {
@@ -75,11 +76,7 @@ public class HouseController {
         return new ResponseEntity<>(houseService.findAll(), HttpStatus.OK);
     }
 
-//    @GetMapping("/pagination")
-//    public ResponseEntity<Iterable<House>> getAllHouseUsingPagination(@RequestParam int page, @RequestParam int size) {
-//        Iterable<House> houses = houseService.findAllHouse(page, size);
-//        return new ResponseEntity<>(houses, HttpStatus.OK);
-//    }
+
 
     @PostMapping
     public ResponseEntity<House> createHouse(@RequestBody House house) {
@@ -183,4 +180,24 @@ public class HouseController {
         }
 
     }
+
+    @GetMapping("/reviews/{houseId}")
+    public ResponseEntity<Iterable<Review>> getReviewsOfHouse(@PathVariable Long houseId){
+        Iterable<Review> reviews = reviewService.findAllByHouseHouseId(houseId);
+        if(reviews == null){
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+
+        return new ResponseEntity<>(reviews, HttpStatus.OK);
+    }
+    @PostMapping("/createReview/{houseId}")
+    public ResponseEntity<Review> createReview(@RequestBody Review review,@PathVariable Long houseId) {
+        Optional<House> house = houseService.findById(houseId);
+        Users userCurrent = userService.findByUsername(getPrincipal());
+        review.setUser(userCurrent);
+        review.setHouse(house.get());
+        review.setPostDate(new Date());
+        return new ResponseEntity<>(reviewService.save(review), HttpStatus.CREATED);
+    }
+
 }
