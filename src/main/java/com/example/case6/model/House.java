@@ -45,4 +45,7 @@ public class House {
     @ManyToOne
     @JoinColumn(name = "users_id")
     private Users users;
+
+//    //duoc
+//    private Long rate;
 }
