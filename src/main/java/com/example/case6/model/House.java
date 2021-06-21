@@ -1,13 +1,9 @@
 package com.example.case6.model;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -43,10 +39,8 @@ public class House {
     private String houseStatus;
 
     @OneToMany
-//    @JsonIgnoreProperties({"id", "house"})
     @Transient
-    //Transient Jpa hieu no k phai 1 persitent -> save ko loi
-//    @Column(insertable = false,updatable = false)
+
     private List<Images> imagesList;
     @ManyToOne
     @JoinColumn(name = "users_id")
