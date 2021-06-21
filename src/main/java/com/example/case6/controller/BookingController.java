@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -60,6 +61,31 @@ public class BookingController {
         return new ResponseEntity<>(bookingList, HttpStatus.OK);
     }
 
-} 
+    @GetMapping("/status/{statusId}/{userId}")
+    public ResponseEntity<List<Booking>> getListBookingByBookingStatus(@PathVariable("statusId") Integer statusId, @PathVariable("userId") Long userId) {
+        List<Booking> bookingList = bookingService.getAllBookingsByBookingStatus(statusId, userId);
+        if (bookingList.isEmpty()) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(bookingList, HttpStatus.OK);
+    }
+
+    @GetMapping("/statistics/{houseId}/{years}")
+    ResponseEntity<List<String>> getTotalTurnOverPerMonth(@PathVariable("houseId") Long houseId,@PathVariable("years") int years) {
+        List<String> totalInEachMonth = new ArrayList<>();
+        for (int i = 1; i <= 12; i++) {
+            String total = bookingService.getTotalTurnOverPerMonth(houseId, i, years);
+            if (total == null) {
+                totalInEachMonth.add("0");
+            } else {
+                totalInEachMonth.add(total);
+            }
+        }
+        return new ResponseEntity<>(totalInEachMonth, HttpStatus.OK);
+
+    }
+
+}
+
 
 

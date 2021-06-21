@@ -36,7 +36,6 @@ public class BookingService implements IBookingService {
     }
 
 
-
     @Override
     public List<Booking> getBookingsByHouseHouseId(Long id) {
         return bookingRepository.getBookingsByHouseHouseId(id);
@@ -47,10 +46,19 @@ public class BookingService implements IBookingService {
         return bookingRepository.getBookingsByUsersUserId(id);
     }
 
-    public Booking findBookingHouseIdAndCurrentDate(Long houseId, Date currentDate){
-        return bookingRepository.findBookingByHouseIdAndCurrentDateRage(houseId,currentDate);
+    public Booking findBookingHouseIdAndCurrentDate(Long houseId, Date currentDate) {
+        return bookingRepository.findBookingByHouseIdAndCurrentDateRage(houseId, currentDate);
     }
-    public List<Booking> setBookingStatusByCurrentDate(Date date){
+
+    public List<Booking> setBookingStatusByCurrentDate(Date date) {
         return bookingRepository.getListBookingHaveDone(date);
+    }
+
+    public List<Booking> getAllBookingsByBookingStatus(Integer status, Long userId) {
+        return bookingRepository.getBookingsByBookingStatusAndUsersUserId(status, userId);
+    }
+
+    public String getTotalTurnOverPerMonth(Long houseId, int month, int years) {
+        return bookingRepository.getTotalTurnOverPerMonth(houseId, month, years);
     }
 }
