@@ -67,4 +67,8 @@ public class BookingService implements IBookingService {
     public String getTotalTurnOverPerMonth(Long houseId, int month, int years) {
         return bookingRepository.getTotalTurnOverPerMonth(houseId, month, years);
     }
+
+    public List<Booking> getListBookingByUserIdAndHouseId(Long userId, Long houseId) {
+        return bookingRepository.getBookingsByUsersUserIdAndHouseHouseId(userId, houseId);
+    }
 }

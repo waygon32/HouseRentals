@@ -10,6 +10,6 @@ public interface IHouseService extends IGeneralService<House> {
     Iterable<House> findHouse(String search, Date checkin, Date checkout);
 
 
-//    Iterable<House> findAllHouse(int page, int size);
-  Iterable<House> getListHouseOfUser(Long id );
+    //    Iterable<House> findAllHouse(int page, int size);
+    Iterable<House> getListHouseOfUser(Long id);
 }

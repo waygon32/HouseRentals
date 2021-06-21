@@ -43,7 +43,9 @@ public class ReviewService implements IReviewService {
         return reviewRepository.findAllByHouseHouseId(houseId);
     }
 
-
+    public Iterable<Review> findReviewsByUserId(Long id,Long houseId) {
+        return reviewRepository.findReviewsByUserUserIdAndHouseHouseId(id,houseId);
+    }
 
 
 }
