@@ -34,6 +34,11 @@ public class ImageService implements IImageService {
     }
 
     @Override
+    public void create(Images model) {
+
+    }
+
+    @Override
     public Iterable<Images> getImagesByHouseId(Long houseId) {
         return imageRepository.getImagesByHouseHouseId(houseId);
     }

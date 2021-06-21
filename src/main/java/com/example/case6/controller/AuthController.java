@@ -1,11 +1,13 @@
 package com.example.case6.controller;
 
+import com.example.case6.message.ResponseMessage;
 import com.example.case6.model.*;
 import com.example.case6.service.role.RoleService;
 import com.example.case6.service.user.IUserService;
 import com.example.case6.service.user.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -13,17 +15,13 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 
 @RestController
@@ -33,6 +31,7 @@ public class AuthController {
     public static final String CONFIRM_FAIL = "confirm fail";
     public static final String LOGINSUCCESS = "Success";
     public static final String LOGINFALSE = "Login false";
+    public static final String FALSE = "False";
     @Autowired
     private AuthenticationManager authenticationManager;
 
@@ -129,14 +128,11 @@ public class AuthController {
 //        return  new ResponseEntity<>(HttpStatus.OK);
 //    }
 
-    @PostMapping("/confirmPassword")
-    public ResponseEntity<?> confirmPassword(@RequestBody String password) {
-        Users currentUser = userService.findbyId(getCurrentUser().getId());
-        if (currentUser.getPassword().equals(passwordEncoder.encode(password))) {
-            return new ResponseEntity<>(CONFIRM_SUCCESS, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(CONFIRM_FAIL, HttpStatus.BAD_REQUEST);
-        }
+    @GetMapping("/confirmPassword/{password}")
+    public ResponseEntity<Boolean> confirmPassword(@PathVariable("password") String password) {
+        Users userCurrent = userService.findbyId(getCurrentUser().getId());
+//        Users userCurrent = userService.findByUsername(getPrincipal());
+     return ResponseEntity.ok(passwordEncoder.matches(password, userCurrent.getPassword()));
     }
 
     @GetMapping("/{id}")
@@ -160,4 +156,43 @@ public class AuthController {
         return ResponseEntity.ok(userService.existByPhoneNumber(phone));
     }
 
+
+    // duoc-----------------------------------------------------------------------
+
+    @RequestMapping(value = "/user/confirmPassword/{password}", method = RequestMethod.GET)
+    public ResponseEntity<?> comparePassword(@PathVariable("password") String password) throws Exception {
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(getCurrentUser().getUsername(), password));
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            String jwt = jwtService.generateTokenLogin(authentication);
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            UserPrinciple user = (UserPrinciple) userDetails;
+            Users curentUser = userService.findByUsername(user.getUsername());
+            return new ResponseEntity<>(true,HttpStatus.OK);
+        } catch (BadCredentialsException e) {
+            return new ResponseEntity<ResponseMessage>(new ResponseMessage(false, CONFIRM_FAIL, null), HttpStatus.NOT_FOUND);
+        }
+    }
+    @GetMapping(value = "/user/current")
+    public ResponseEntity<?> getUserById() {
+        long userId = getCurrentUser().getId();
+        Users user = userService.findbyId(userId);
+        return new ResponseEntity<>(user, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/user/updateCurrent/{password}/{newPassword}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> updateUser( @PathVariable("password") String password,@PathVariable("newPassword") String newPassword) {
+        Users userCurrent = userService.findbyId(getCurrentUser().getId());
+        if(passwordEncoder.matches(password, userCurrent.getPassword())) {
+        Users currentUser = userService.findbyId(getCurrentUser().getId());
+       userCurrent.setPassword(passwordEncoder.encode(newPassword));
+        userService.save(userCurrent);
+
+        return new ResponseEntity<Users>(userCurrent, HttpStatus.OK);
+        }
+        return new ResponseEntity(FALSE, HttpStatus.OK);
+    }
+
+//*******************************************************************************************************
 }

@@ -34,6 +34,11 @@ public class HouseService implements IHouseService {
     }
 
     @Override
+    public void create(House model) {
+
+    }
+
+    @Override
     public Iterable<House> findHouse(String search, Date checkin, Date checkout) {
         return houseRepository.findHouse(search,checkin,checkout);
     }
