@@ -31,6 +31,12 @@ public class BookingService implements IBookingService {
     }
 
     @Override
+    public void create(Booking model) {
+
+    }
+
+
+    @Override
     public Optional<Booking> findById(Long id) {
         return bookingRepository.findById(id);
     }

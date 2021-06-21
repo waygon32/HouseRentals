@@ -34,6 +34,11 @@ public class ReviewService implements IReviewService {
     }
 
     @Override
+    public void create(Review model) {
+
+    }
+
+    @Override
     public Iterable<Review> findAllByHouseHouseId(Long houseId) {
         return reviewRepository.findAllByHouseHouseId(houseId);
     }

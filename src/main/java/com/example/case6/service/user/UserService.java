@@ -49,6 +49,11 @@ public class UserService implements IUserService {
     }
 
     @Override
+    public void create(Users model) {
+
+    }
+
+    @Override
     public Users findByUsername(String username) {
         return userRepository.findByUsername(username);
     }
