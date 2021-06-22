@@ -1,5 +1,9 @@
 package com.example.case6.service.review;
 
+<<<<<<< HEAD
+=======
+import com.example.case6.model.House;
+>>>>>>> thanh
 import com.example.case6.model.Review;
 import com.example.case6.repository.IReviewRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +53,9 @@ public class ReviewService implements IReviewService {
 
     public List<Long> getTop5RatingRoom() {
         return reviewRepository.findTop5RatingRoom();
+    }
+    public List<String> getStars(){
+        return  reviewRepository.getAvgStartTop5();
     }
 
 }

@@ -20,6 +20,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 import java.awt.*;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -188,7 +189,6 @@ public class HouseController {
         if (reviews == null) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
-
         return new ResponseEntity<>(reviews, HttpStatus.OK);
     }
 
@@ -205,7 +205,7 @@ public class HouseController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         for (int i = 0; i < list.size(); i++) {
-            House house  = houseService.findById(list.get(i)).get();
+            House house = houseService.findById(list.get(i)).get();
             result.add(house);
         }
         result.forEach(house -> {
@@ -215,6 +215,11 @@ public class HouseController {
         });
         System.out.println();
         return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping("/stars")
+    List<String> getAvgStart() {
+        return reviewService.getStars();
     }
 
 }
