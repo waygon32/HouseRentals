@@ -1,18 +1,24 @@
 package com.example.case6.service.booking;
 
 import com.example.case6.model.Booking;
+import com.example.case6.model.Images;
 import com.example.case6.repository.IBookingRepository;
+import com.example.case6.repository.IImageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Service
 public class BookingService implements IBookingService {
     @Autowired
     IBookingRepository bookingRepository;
+    @Autowired
+    private IImageRepository imageRepository;
 
 
     public Iterable<Booking> findAll() {
@@ -61,7 +67,12 @@ public class BookingService implements IBookingService {
     }
 
     public List<Booking> getAllBookingsByBookingStatus(Integer status, Long userId) {
-        return bookingRepository.getBookingsByBookingStatusAndUsersUserId(status, userId);
+        List<Booking> resultBooking = bookingRepository.getBookingByBookingStatusAndUsersUserId(status, userId);
+        resultBooking.forEach(booking -> {
+            Iterable<Images> images = imageRepository.findImagesByHouseHouseId(booking.getHouse().getHouseId());
+            booking.getHouse().setImagesList(StreamSupport.stream(images.spliterator(), false).collect(Collectors.toList()));
+        });
+        return resultBooking;
     }
 
     public String getTotalTurnOverPerMonth(Long houseId, int month, int years) {

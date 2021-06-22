@@ -2,6 +2,7 @@ package com.example.case6.controller;
 
 import com.example.case6.model.Images;
 import com.example.case6.service.image.IImageService;
+import com.example.case6.service.review.ReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,8 @@ import java.util.Optional;
 public class ImageController {
     @Autowired
     private IImageService imageService;
+    @Autowired
+    private ReviewService reviewService;
 
     @GetMapping
     public ResponseEntity<Iterable<Images>> getAllImage() {
@@ -49,4 +52,6 @@ public class ImageController {
             return new ResponseEntity<>(image, HttpStatus.OK);
         }).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
+
+
 }

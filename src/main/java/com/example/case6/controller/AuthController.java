@@ -165,7 +165,7 @@ public class AuthController {
     }
 
 
-    // duoc-----------------------------------------------------------------------
+
 
     @GetMapping(value = "/user/current")
     public ResponseEntity<?> getUserById() {
@@ -187,7 +187,6 @@ public class AuthController {
         return new ResponseEntity(FALSE, HttpStatus.OK);
     }
 
-    //*******************************************************************************************************
     @GetMapping("/reviewChecking/{userId}/{houseId}")
     public ResponseEntity<Integer> checkRightToReviewForUser(@PathVariable("userId") Long id,@PathVariable("houseId") Long houseId){
         List<Review> reviewList = (List<Review>) reviewService.findReviewsByUserId(id,houseId);
