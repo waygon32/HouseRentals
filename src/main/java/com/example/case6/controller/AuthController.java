@@ -2,6 +2,9 @@ package com.example.case6.controller;
 
 import com.example.case6.message.ResponseMessage;
 import com.example.case6.model.*;
+import com.example.case6.repository.IReviewRepository;
+import com.example.case6.service.booking.BookingService;
+import com.example.case6.service.review.ReviewService;
 import com.example.case6.service.role.RoleService;
 import com.example.case6.service.user.IUserService;
 import com.example.case6.service.user.JwtService;
@@ -22,6 +25,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -46,6 +50,10 @@ public class AuthController {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private ReviewService reviewService;
+    @Autowired
+    private BookingService bookingsService;
 
     private UserPrinciple getCurrentUser() {
         return (UserPrinciple) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -132,7 +140,7 @@ public class AuthController {
     public ResponseEntity<Boolean> confirmPassword(@PathVariable("password") String password) {
         Users userCurrent = userService.findbyId(getCurrentUser().getId());
 //        Users userCurrent = userService.findByUsername(getPrincipal());
-     return ResponseEntity.ok(passwordEncoder.matches(password, userCurrent.getPassword()));
+        return ResponseEntity.ok(passwordEncoder.matches(password, userCurrent.getPassword()));
     }
 
     @GetMapping("/{id}")
@@ -159,21 +167,6 @@ public class AuthController {
 
     // duoc-----------------------------------------------------------------------
 
-    @RequestMapping(value = "/user/confirmPassword/{password}", method = RequestMethod.GET)
-    public ResponseEntity<?> comparePassword(@PathVariable("password") String password) throws Exception {
-        try {
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(getCurrentUser().getUsername(), password));
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            String jwt = jwtService.generateTokenLogin(authentication);
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            UserPrinciple user = (UserPrinciple) userDetails;
-            Users curentUser = userService.findByUsername(user.getUsername());
-            return new ResponseEntity<>(true,HttpStatus.OK);
-        } catch (BadCredentialsException e) {
-            return new ResponseEntity<ResponseMessage>(new ResponseMessage(false, CONFIRM_FAIL, null), HttpStatus.NOT_FOUND);
-        }
-    }
     @GetMapping(value = "/user/current")
     public ResponseEntity<?> getUserById() {
         long userId = getCurrentUser().getId();
@@ -182,17 +175,37 @@ public class AuthController {
     }
 
     @RequestMapping(value = "/user/updateCurrent/{password}/{newPassword}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> updateUser( @PathVariable("password") String password,@PathVariable("newPassword") String newPassword) {
+    public ResponseEntity<?> updateUser(@PathVariable("password") String password, @PathVariable("newPassword") String newPassword) {
         Users userCurrent = userService.findbyId(getCurrentUser().getId());
-        if(passwordEncoder.matches(password, userCurrent.getPassword())) {
-        Users currentUser = userService.findbyId(getCurrentUser().getId());
-       userCurrent.setPassword(passwordEncoder.encode(newPassword));
-        userService.save(userCurrent);
+        if (passwordEncoder.matches(password, userCurrent.getPassword())) {
+            Users currentUser = userService.findbyId(getCurrentUser().getId());
+            userCurrent.setPassword(passwordEncoder.encode(newPassword));
+            userService.save(userCurrent);
 
-        return new ResponseEntity<Users>(userCurrent, HttpStatus.OK);
+            return new ResponseEntity<Users>(userCurrent, HttpStatus.OK);
         }
         return new ResponseEntity(FALSE, HttpStatus.OK);
     }
 
-//*******************************************************************************************************
+    //*******************************************************************************************************
+    @GetMapping("/reviewChecking/{userId}/{houseId}")
+    public ResponseEntity<Integer> checkRightToReviewForUser(@PathVariable("userId") Long id,@PathVariable("houseId") Long houseId){
+        List<Review> reviewList = (List<Review>) reviewService.findReviewsByUserId(id,houseId);
+        int reviewCount = reviewList.size();
+        int countBookingDone = 0;
+        List<Booking> list = bookingsService.getListBookingByUserIdAndHouseId(id,houseId);
+        for (Booking booking : list) {
+            if (booking.getBookingStatus() == 1) {
+                ++countBookingDone;
+            }
+        }
+        System.out.println("====review================="+reviewCount);
+        System.out.println("==========Book==========="+countBookingDone);
+        if (reviewCount < countBookingDone) {
+            return new ResponseEntity<>(1, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(0, HttpStatus.OK);
+    }
+
+
 }

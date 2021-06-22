@@ -169,7 +169,7 @@ public class HouseController {
             Booking booking = bookingService.findBookingHouseIdAndCurrentDate(house.getHouseId(), current);
             if (booking == null) {
                 System.out.println(" Khong co Booking nao trong today thi houseStatus ->blank");
-                if (house.getHouseStatus() != "upgrade" && house.getHouseStatus() != "blank") {
+                if (house.getHouseStatus() != "upgrade") {
                     updateHouse(house.getHouseId(), "blank");
                 }
             } else {
