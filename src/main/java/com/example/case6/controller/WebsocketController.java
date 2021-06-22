@@ -9,6 +9,8 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Date;
+
 @CrossOrigin("*")
 @RestController
 public class WebsocketController {
@@ -17,6 +19,9 @@ public class WebsocketController {
     @MessageMapping("/houses")
     @SendTo("/topic/houses")
     public Review addReview(Review review){
+        long milis = System.currentTimeMillis();
+        Date date = new Date(milis);
+        review.setPostDate(date);
         return reviewService.save(review);
     }
 }
