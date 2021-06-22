@@ -1,7 +1,6 @@
 package com.example.case6.controller;
 
 import com.example.case6.model.Images;
-import com.example.case6.model.Recommend;
 import com.example.case6.service.image.IImageService;
 import com.example.case6.service.review.ReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +8,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Optional;
 
 @RestController
