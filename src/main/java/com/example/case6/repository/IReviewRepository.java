@@ -1,14 +1,13 @@
 package com.example.case6.repository;
 
 
-<<<<<<< HEAD
-=======
 
->>>>>>> thanh
 import com.example.case6.model.Review;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.relational.core.sql.In;
 
+import java.lang.annotation.Native;
 import java.util.List;
 
 public interface IReviewRepository extends JpaRepository<Review, Long> {

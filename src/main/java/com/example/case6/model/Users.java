@@ -30,7 +30,7 @@ public class Users {
 
     @NotNull
     @Size(max = 30)
-    @Pattern(regexp = "[A-Za-z ]+")
+    @Pattern(regexp = "[A-Za-z0-9 ]+")
     private String fullname;
 
     @NotNull
