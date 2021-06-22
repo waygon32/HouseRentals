@@ -8,6 +8,7 @@ import com.example.case6.service.booking.IBookingService;
 import com.example.case6.service.house.IHouseService;
 import com.example.case6.service.image.IImageService;
 import com.example.case6.service.review.IReviewService;
+import com.example.case6.service.review.ReviewService;
 import com.example.case6.service.user.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
@@ -31,6 +32,7 @@ import java.util.stream.StreamSupport;
 @RestController
 @CrossOrigin("*")
 @RequestMapping("/houses")
+
 public class HouseController {
     //    convert value string to date
     @InitBinder
@@ -63,7 +65,7 @@ public class HouseController {
     @Autowired
     private BookingService bookingService;
     @Autowired
-    private IReviewService reviewService;
+    private ReviewService reviewService;
 
     @GetMapping
     public ResponseEntity<?> findAllHouse() {
@@ -75,7 +77,6 @@ public class HouseController {
         setBookingStatusByCurrentDate(today);
         return new ResponseEntity<>(houseService.findAll(), HttpStatus.OK);
     }
-
 
 
     @PostMapping
@@ -182,17 +183,38 @@ public class HouseController {
     }
 
     @GetMapping("/reviews/{houseId}")
-    public ResponseEntity<Iterable<Review>> getReviewsOfHouse(@PathVariable Long houseId){
+    public ResponseEntity<Iterable<Review>> getReviewsOfHouse(@PathVariable Long houseId) {
         Iterable<Review> reviews = reviewService.findAllByHouseHouseId(houseId);
-        if(reviews == null){
+        if (reviews == null) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
         return new ResponseEntity<>(reviews, HttpStatus.OK);
     }
+
     @PostMapping("/createReview")
     public ResponseEntity<Review> createReview(@RequestBody Review review) {
         return new ResponseEntity<>(reviewService.save(review), HttpStatus.CREATED);
+    }
+
+    @GetMapping("/top5")
+    public ResponseEntity<?> getTop5Rating() {
+        List<Long> list = reviewService.getTop5RatingRoom();
+        List<House> result = new ArrayList<>();
+        if (list.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        for (int i = 0; i < list.size(); i++) {
+            House house  = houseService.findById(list.get(i)).get();
+            result.add(house);
+        }
+        result.forEach(house -> {
+            Iterable<Images> images = imageRepository.findImagesByHouseHouseId(house.getHouseId());
+            //Đổi iterable -> list
+            house.setImagesList(StreamSupport.stream(images.spliterator(), false).collect(Collectors.toList()));
+        });
+        System.out.println();
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
 }
