@@ -1,6 +1,5 @@
 package com.example.case6.controller;
 
-import com.example.case6.message.ResponseMessage;
 import com.example.case6.model.*;
 
 import com.example.case6.repository.IImageRepository;
@@ -8,7 +7,6 @@ import com.example.case6.service.booking.BookingService;
 import com.example.case6.service.booking.IBookingService;
 import com.example.case6.service.house.IHouseService;
 import com.example.case6.service.image.IImageService;
-
 import com.example.case6.service.review.IReviewService;
 import com.example.case6.service.user.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,7 +52,6 @@ public class HouseController {
         return userName;
     }
 
-
     @Autowired
     private IHouseService houseService;
     @Autowired
@@ -67,7 +64,6 @@ public class HouseController {
     private BookingService bookingService;
     @Autowired
     private IReviewService reviewService;
-
 
     @GetMapping
     public ResponseEntity<?> findAllHouse() {
@@ -194,29 +190,9 @@ public class HouseController {
 
         return new ResponseEntity<>(reviews, HttpStatus.OK);
     }
-    @PostMapping("/createReview/{houseId}")
-    public ResponseEntity<Review> createReview(@RequestBody Review review,@PathVariable Long houseId) {
-        Optional<House> house = houseService.findById(houseId);
-        Users userCurrent = userService.findByUsername(getPrincipal());
-        review.setUser(userCurrent);
-        review.setHouse(house.get());
-        review.setPostDate(new Date());
+    @PostMapping("/createReview")
+    public ResponseEntity<Review> createReview(@RequestBody Review review) {
         return new ResponseEntity<>(reviewService.save(review), HttpStatus.CREATED);
     }
-
-    //duoc  rating
-//    @RequestMapping(value = "/rates/{houseId}", method = RequestMethod.GET)
-//    public ResponseEntity<List<Rate>> listRatesByHouseId(@PathVariable Long houseId) {
-//        List<Rate> rates = this.rateService.findAllByHouseId(houseId);
-//
-//        if (rates.isEmpty()) {
-//            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-//        }
-//
-//        return new ResponseEntity<>(rates, HttpStatus.OK);
-//    }
-
-
-    //------------------------------------------------------------------------
 
 }
