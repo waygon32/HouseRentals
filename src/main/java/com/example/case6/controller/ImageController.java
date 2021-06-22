@@ -1,7 +1,7 @@
 package com.example.case6.controller;
 
 import com.example.case6.model.Images;
-import com.example.case6.model.Recommend;
+
 import com.example.case6.service.image.IImageService;
 import com.example.case6.service.review.ReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
