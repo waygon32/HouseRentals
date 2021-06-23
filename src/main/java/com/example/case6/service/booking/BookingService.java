@@ -82,4 +82,8 @@ public class BookingService implements IBookingService {
     public List<Booking> getListBookingByUserIdAndHouseId(Long userId, Long houseId) {
         return bookingRepository.getBookingsByUsersUserIdAndHouseHouseId(userId, houseId);
     }
+
+    public List<Booking> getAllBookingByMonthAndYear(Long houseId, int month, int year) {
+        return bookingRepository.getBookingsByMonthAndYear(houseId, month, year);
+    }
 }

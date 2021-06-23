@@ -71,7 +71,7 @@ public class BookingController {
     }
 
     @GetMapping("/statistics/{houseId}/{years}")
-    ResponseEntity<List<String>> getTotalTurnOverPerMonth(@PathVariable("houseId") Long houseId,@PathVariable("years") int years) {
+    ResponseEntity<List<String>> getTotalTurnOverPerMonth(@PathVariable("houseId") Long houseId, @PathVariable("years") int years) {
         List<String> totalInEachMonth = new ArrayList<>();
         for (int i = 1; i <= 12; i++) {
             String total = bookingService.getTotalTurnOverPerMonth(houseId, i, years);
@@ -85,6 +85,12 @@ public class BookingController {
 
     }
 
+    @GetMapping("/{houseId}/{month}/{year}")
+    public ResponseEntity<List<Booking>> getListBookingByYearAndMonth(@PathVariable("houseId") Long houseId, @PathVariable("month") int month, @PathVariable("year") int year) {
+        List<Booking> bookingList = bookingService.getAllBookingByMonthAndYear(houseId, month, year);
+        return new ResponseEntity<>(bookingList, HttpStatus.OK);
+
+    }
 }
 
 

@@ -23,8 +23,11 @@ public interface IBookingRepository extends JpaRepository<Booking, Long> {
 
     List<Booking> getBookingByBookingStatusAndUsersUserId(Integer status, Long id);
 
-    @Query(nativeQuery = true, value = "select sum(total) as total3 from house_rentals.booking where house_id=?1 and month(checkin_Date)=?2 and year(checkin_Date)=?3 group by house_id")
+    @Query(nativeQuery = true, value = "select sum(total) as total3 from house_rentals.booking where house_id=?1 and booking_status='1' and month(checkin_Date)=?2 and year(checkin_Date)=?3 group by house_id")
     String getTotalTurnOverPerMonth(Long houseId, int month, int years);
 
-    List<Booking> getBookingsByUsersUserIdAndHouseHouseId(Long userId,Long houseId);
+    List<Booking> getBookingsByUsersUserIdAndHouseHouseId(Long userId, Long houseId);
+
+    @Query(nativeQuery = true, value = "select *   from house_rentals.booking where house_id=?1 and booking_status='1' and month(checkin_Date)=?2 and year(checkin_Date)=?3 ")
+    List<Booking> getBookingsByMonthAndYear(Long houseId, int month, int year);
 }
