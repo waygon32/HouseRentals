@@ -30,12 +30,12 @@ public class Users {
 
     @NotNull
     @Size(max = 30)
-    @Pattern(regexp = "[A-Za-z0-9 ]+")
+    @Pattern(regexp = "[A-Za-z0-9ÁÀẢÃẠáàãảạêểếễệiíìịĩôốồỗổộưứữửựâấầẩẫậăẳằắặẵđơớờởợỡýỳỷỵỹĐ ]+")
     private String fullname;
 
     @NotNull
     @Size(min = 6, max=20)
-    @Pattern(regexp = "^(?=[a-zA-Z0-9._])(?!.*[_.]{2})[^_.].*[^_.]$")
+    @Pattern(regexp = "[A-Za-z0-9._]+")
     private String username;
 
     @NotNull
